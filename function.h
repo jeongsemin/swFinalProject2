@@ -19,12 +19,14 @@ int g_stage2Height = 30;
 int g_stage3Width = 70;
 int g_stage3Height = 30;
     //스테이지 시작 좌표
+
+COORD g_charPosition;
 COORD g_stage1StartPos = { 2,19 -1 };       //게임보드 y좌표가 0~19이므로     18에서 시작해야함         
 COORD g_stage2StartPos = { 2,29 -1 };
 COORD g_stage3StartPos = { 2,29 -1 };
 
 int g_curStage = 1;                 //현재 스테이지
-int g_charSpeed = 50;               //캐릭터의 이동속도
+int g_charSpeed = 100;               //캐릭터의 이동속도
 int g_npcSpeed = 50;                //NPC의 이동속도
 int g_gravityAccereralte = 250;     //중력 가속도        점프(q,w,e)를 했을 때 일정 시간 Show 하게 하는 역할     q,w,e 점프 함수 참조
 int g_fatigue = 0;                  //피로도
@@ -87,11 +89,11 @@ void push(int x, int y, int dir);                                       // 박스�
 
 void fatigue()
 {
-    COORD curPos = getCurrentCursorPosition();
-    
-    setCurrentCursorPosition(20, 0);
+    //COORD curPos = getCurrentCursorPosition();
+    setCurrentCursorPosition(150, 0);
     printf("피로도 : %d",g_fatigue);
-    setCurrentCursorPosition(curPos.X, curPos.Y);
+
+    //setCurrentCursorPosition(curPos.X, curPos.Y);
 
 }
 void setCurrentCursorPosition(int x, int y) {                           //커서 위치 지정
@@ -192,7 +194,7 @@ int detectCollision(int posX, int posY) {            // 충돌 검사 함수
 int isGameOver() { return g_fatigue >= 100; }    //피로도가 100을 이상이면 1을 리턴
 
 int moveChar(int dx, int dy) {
-    COORD curPos = getCurrentCursorPosition();
+    COORD curPos = g_charPosition;
     int collisionResult = detectCollision(curPos.X + 2 * dx, curPos.Y + dy);
     if (collisionResult == 9) return gotoNextStage();            //다음 스테이지
 
@@ -208,13 +210,16 @@ int moveChar(int dx, int dy) {
         g_stage2GameBoardInfo[curPos.Y][curPos.X / 2] = 0;
         g_stage2GameBoardInfo[curPos.Y + dy][curPos.X / 2 + dx] = 8;
     }
-    setCurrentCursorPosition(curPos.X + 2 * dx, curPos.Y + dy);
-
+    
+    //setCurrentCursorPosition(curPos.X + 2 * dx, curPos.Y + dy);
+    g_charPosition.X = curPos.X + 2*dx;
+    g_charPosition.Y = curPos.Y + dy;
     reDrawMap();
     
 }
 int shiftLeft() {                                                   // ←
-    COORD curPos = getCurrentCursorPosition();
+    //COORD curPos = getCurrentCursorPosition();
+    COORD curPos = g_charPosition;
     if(detectCollision(curPos.X - 2, curPos.Y) == 1) return 1;           //벽만 아니면 이동
                                                 
     moveChar(-1, 0);
@@ -223,7 +228,8 @@ int shiftLeft() {                                                   // ←
 }
 
 int shiftRight() {                                                  // →
-    COORD curPos = getCurrentCursorPosition();
+    //COORD curPos = getCurrentCursorPosition();
+    COORD curPos = g_charPosition;
     if (detectCollision(curPos.X + 2, curPos.Y) == 1) return 1;           //벽만 아니면 이동
    
     moveChar(1, 0);    
@@ -231,7 +237,8 @@ int shiftRight() {                                                  // →
 }
 
 int jump() {                                                        // ↑
-    COORD curPos = getCurrentCursorPosition();
+    //COORD curPos = getCurrentCursorPosition();
+    COORD curPos = g_charPosition;
     if (detectCollision(curPos.X    , curPos.Y-1) == 1) return 1;           //벽만 아니면 이동
    
     moveChar(0, -1);                         
@@ -240,7 +247,8 @@ int jump() {                                                        // ↑
 
 }
 int shiftDLeft() {                                                  // ↖        ★★★
-    COORD curPos = getCurrentCursorPosition();
+    //COORD curPos = getCurrentCursorPosition();
+    COORD curPos = g_charPosition;
     if (detectCollision(curPos.X-2, curPos.Y - 1) == 1) return 1;           //벽만 아니면 이동
 
 //  moveChar(-1, -1);     이렇게 한다면 한번에 순간이동 할 것임    
@@ -253,7 +261,8 @@ int shiftDLeft() {                                                  // ↖       
 }
 
 int shiftDRight() {                                                  // ↗       ★★★
-    COORD curPos = getCurrentCursorPosition();
+    //COORD curPos = getCurrentCursorPosition();
+    COORD curPos = g_charPosition;
     if (detectCollision(curPos.X + 2, curPos.Y - 1) == 1) return 1;           //벽만 아니면 이동
 
     //moveChar(1, -1);      이렇게 한다면 한번에 순간이동 할 것임    
@@ -266,7 +275,8 @@ int shiftDRight() {                                                  // ↗      
 }
 
 int gravity() {                                                      //중력           땅에 닿으면 1 리턴
-    COORD curPos = getCurrentCursorPosition();
+    //COORD curPos = getCurrentCursorPosition();
+    COORD curPos = g_charPosition;
     int collisionResult = detectCollision(curPos.X, curPos.Y + 1);
 
     if (collisionResult == 0) {
@@ -283,7 +293,9 @@ int gravity() {                                                      //중력     
             g_stage3GameBoardInfo[curPos.Y][curPos.X/2] = 0;
             g_stage3GameBoardInfo[curPos.Y + 1][curPos.X/2] = 8;
         }
-        setCurrentCursorPosition(curPos.X, curPos.Y+1);
+        //setCurrentCursorPosition(curPos.X, curPos.Y+1);
+        g_charPosition.X = curPos.X;
+        g_charPosition.Y = curPos.Y + 1;
         reDrawMap();
 //      Sleep(100);
         return 0;
@@ -298,10 +310,21 @@ void initiallize() {                                            // main함수 whil
     removeCursor();    
     drawStageGameBoardInfo();
     reDrawMap();
-
+    if (g_curStage == 1)
+    {
+        g_charPosition = g_stage1StartPos;
+    }
+    else if(g_curStage == 2)
+    {
+        g_charPosition = g_stage2StartPos;
+    }
+    else if (g_curStage == 3)
+    {
+        g_charPosition = g_stage3StartPos;
+    }
 //    setCurrentCursorPosition(g_stage1StartPos.X , g_stage1StartPos.Y);
 //    printf("◎");
-    setCurrentCursorPosition(g_stage1StartPos.X, g_stage1StartPos.Y);
+//    setCurrentCursorPosition(g_stage1StartPos.X, g_stage1StartPos.Y);
 }
 
 void drawStageGameBoardInfo() {                                 // 게임보드정보를 입력하는 함수
@@ -363,7 +386,8 @@ void reDrawMap() {                                              // 콘솔창에 맵 �
             }
         }
     }
-    setCurrentCursorPosition(originPos.X, originPos.Y);
+    //setCurrentCursorPosition(originPos.X, originPos.Y);
+    fatigue();
 }
 /*
 int isNextStage() {
@@ -376,8 +400,11 @@ int isNextStage() {
 int gotoNextStage() {                                                       //다음 스테이지로 이동
     g_curStage++;
     reDrawMap();
-    if      (g_curStage == 2)   setCurrentCursorPosition(g_stage2StartPos.X, g_stage2StartPos.Y);
-    else if (g_curStage == 3)   setCurrentCursorPosition(g_stage3StartPos.X, g_stage3StartPos.Y);
+    if (g_curStage == 2)   //setCurrentCursorPosition(g_stage2StartPos.X, g_stage2StartPos.Y);
+        g_charPosition = g_stage2StartPos;
+    else if (g_curStage == 3)   //setCurrentCursorPosition(g_stage3StartPos.X, g_stage3StartPos.Y);
+        g_charPosition = g_stage3StartPos;
+
     else if (g_curStage == 4)   victory();
 }
 

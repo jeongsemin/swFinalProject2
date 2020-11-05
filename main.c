@@ -3,11 +3,11 @@
 int main() {
 
 	initiallize();
-	
 
 	while (1) {		
-		
 //		if (isGameOver()) break;		moveChar에서 구현
+		
+
 		processKeyInput();
 		while (1) {
 			
