@@ -190,8 +190,27 @@ int detectCollision(int posX, int posY) {            // 충돌 검사 함수
     //    return 1;
     return 0;
 }
+int checkg_fatigue()
+{
+    return g_fatigue >= 100;
+}
 
-int isGameOver() { return g_fatigue >= 100; }    //피로도가 100을 이상이면 1을 리턴
+
+int isGameOver() { 
+    
+    setCurrentCursorPosition(0, 0);
+    for (int y = 0; y < g_stage3Height; y++) {
+        for (int x = 0; x < g_stage3Width; x++) {
+            printf("  ");
+        }
+        printf(" ");
+    }
+    setCurrentCursorPosition(30, 10);
+    printf("YOU ARE TIRED!!");
+
+    
+    
+}    //피로도가 100을 이상이면 1을 리턴
 
 int moveChar(int dx, int dy) {
     COORD curPos = g_charPosition;
@@ -214,6 +233,7 @@ int moveChar(int dx, int dy) {
     //setCurrentCursorPosition(curPos.X + 2 * dx, curPos.Y + dy);
     g_charPosition.X = curPos.X + 2*dx;
     g_charPosition.Y = curPos.Y + dy;
+    g_fatigue++;
     reDrawMap();
     
 }

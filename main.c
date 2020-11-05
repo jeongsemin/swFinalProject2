@@ -10,10 +10,14 @@ int main() {
 
 		processKeyInput();
 		while (1) {
-			
 			if (gravity() == 1) {
 				break;
-			}						
+			}	
+			if (checkg_fatigue())
+			{
+				isGameOver();
+				return 0;
+			}
 		}
 
 	}
