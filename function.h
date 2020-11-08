@@ -26,7 +26,7 @@ COORD g_stage2StartPos = { 2,29 -1 };
 COORD g_stage3StartPos = { 2,29 -1 };
 
 int g_curStage = 1;                 //현재 스테이지
-int g_charSpeed = 100;               //캐릭터의 이동속도
+int g_charSpeed = 50;               //캐릭터의 이동속도
 int g_npcSpeed = 50;                //NPC의 이동속도
 int g_gravityAccereralte = 250;     //중력 가속도        점프(q,w,e)를 했을 때 일정 시간 Show 하게 하는 역할     q,w,e 점프 함수 참조
 int g_fatigue = 0;                  //피로도
@@ -56,13 +56,13 @@ void fullscreen();                                                      // 콘솔�
 
 void drawStageGameBoardInfo();                                          // 게임보드정보를 입력하는 함수
 
-int isGameOver();                                                       // 피로도가 100을 이상이면 1을 리턴
+void isGameOver();                                                       // 피로도가 100을 이상이면 1을 리턴
 
 int gravity();                                                          // 중력
 
 void reDrawMap();                                                       // 콘솔창에 맵 정보를 업데이트
 
-int moveChar(int dx, int dy);                                           //캐릭터를 (+dx,+dy)만큼 움직임
+void moveChar(int dx, int dy);                                           //캐릭터를 (+dx,+dy)만큼 움직임
 
 int jump();                                                             // ↑
 
@@ -85,8 +85,24 @@ int gravityBox(int x, int y);                                           // 박스�
 void pushBox();                                                         // 박스 밀기 함수(조건체크)
 
 void push(int x, int y, int dir);                                       // 박스를 미는 함수(구현)
+
+void fatigue();                                                         // 피로도 구현 함수 + 이동시 피로도 증가
+
+int check_fatigue();                                                    // 피로도 100 달성 시 1 반환
+
+void checkObstaclecontect();                                            // 장애물 접촉시 피로도 제어
+
+void checkRestorecontect();                                             // 샘물 접촉 시 피로도 제어
 //함수 구현
 
+void checkObstaclecontent()
+{
+    
+}
+void checkRestorecontect()
+{
+
+}
 void fatigue()
 {
     //COORD curPos = getCurrentCursorPosition();
@@ -196,7 +212,7 @@ int checkg_fatigue()
 }
 
 
-int isGameOver() { 
+void isGameOver() { 
     
     setCurrentCursorPosition(0, 0);
     for (int y = 0; y < g_stage3Height; y++) {
@@ -212,7 +228,7 @@ int isGameOver() {
     
 }    //피로도가 100을 이상이면 1을 리턴
 
-int moveChar(int dx, int dy) {
+void moveChar(int dx, int dy) {
     COORD curPos = g_charPosition;
     int collisionResult = detectCollision(curPos.X + 2 * dx, curPos.Y + dy);
     if (collisionResult == 9) return gotoNextStage();            //다음 스테이지

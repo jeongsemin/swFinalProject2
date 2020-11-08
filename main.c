@@ -6,18 +6,18 @@ int main() {
 
 	while (1) {		
 //		if (isGameOver()) break;		moveChar에서 구현
-		
+		if (checkg_fatigue())
+		{
+			isGameOver();
+			return 0;
+		}
 
 		processKeyInput();
 		while (1) {
 			if (gravity() == 1) {
 				break;
 			}	
-			if (checkg_fatigue())
-			{
-				isGameOver();
-				return 0;
-			}
+
 		}
 
 	}
